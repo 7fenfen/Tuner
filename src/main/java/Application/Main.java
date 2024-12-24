@@ -33,7 +33,7 @@ public class Main {
         mainFrame.setVisible(true);
 
         // 在主窗口中添加内容 (例如：添加一个标签)
-        JLabel label = new JLabel("主界面", SwingConstants.CENTER);
+        JLabel label = new JLabel("平安夜快乐", SwingConstants.CENTER);
         label.setFont(new Font("微软雅黑", Font.BOLD, 24));
         mainFrame.add(label);
     }

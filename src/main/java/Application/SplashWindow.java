@@ -31,7 +31,7 @@ class SplashWindow extends JFrame {
         mainPanel.add(titleLabel, BorderLayout.CENTER);
 
         // 副标题标签
-        subtitleLabel = new JLabel("Powered by 张恒鑫 and TIANT", SwingConstants.CENTER);
+        subtitleLabel = new JLabel("Powered by 张恒鑫", SwingConstants.CENTER);
         subtitleLabel.setFont(new Font("微软雅黑", Font.PLAIN, 12));
         mainPanel.add(subtitleLabel, BorderLayout.NORTH);
 

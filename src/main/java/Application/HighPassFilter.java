@@ -2,7 +2,7 @@ package Application;
 
 class HighPassFilter {
 
-    private double alpha; // 用来调节高通滤波器的"响应"频率
+    private final double alpha; // 用来调节高通滤波器的"响应"频率
     private double lastInput; // 上一个输入值
     private double lastOutput; // 上一个输出值
 

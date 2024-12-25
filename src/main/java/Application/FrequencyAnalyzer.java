@@ -155,6 +155,10 @@ public class FrequencyAnalyzer {
         return shorts;
     }
 
+    public int getHopSize() {
+        return hopSize;
+    }
+
     public interface FrequencyUpdateCallback {
         void onFrequencyUpdate(double frequency);
     }

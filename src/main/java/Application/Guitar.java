@@ -2,7 +2,6 @@ package Application;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 public class Guitar implements Instrument {
     // 吉他6根弦的音名和频率的哈希表

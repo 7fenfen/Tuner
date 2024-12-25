@@ -5,53 +5,78 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 
 /**
- * Splash界面设计，控制打开后显示的第一个界面（自动跳转）
+ * Splash启动前界面设计
  **/
 
+
 class SplashWindow extends JFrame {
-    private JLabel titleLabel;
-    private JLabel subtitleLabel;
-    private JLabel countdownLabel;
+    private final JLabel countdownLabel;
     private int countdown = 3;
 
     public SplashWindow() {
-        super("启动中..."); // 窗口标题
-        setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE); // 禁止关闭
-        setUndecorated(true); // 去除窗口边框
-        setSize(400, 600); // 窗口大小
-        setLocationRelativeTo(null); // 居中显示
+        super("启动中...");
+        setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+        setUndecorated(true);
+        setSize(400, 600);
+        setLocationRelativeTo(null);
 
-        // 主容器并设置边距
+        // 主面板使用BorderLayout
         JPanel mainPanel = new JPanel(new BorderLayout());
-        mainPanel.setBorder(new EmptyBorder(20, 20, 20, 20)); // 设置边距
+        mainPanel.setBorder(new EmptyBorder(20, 20, 20, 20));
 
-        // 标题标签
-        titleLabel = new JLabel("调音器和节拍器", SwingConstants.CENTER);
-        titleLabel.setFont(new Font("微软雅黑", Font.BOLD, 20));
-        mainPanel.add(titleLabel, BorderLayout.CENTER);
-
-        // 副标题标签
-        subtitleLabel = new JLabel("Powered by 张恒鑫", SwingConstants.CENTER);
+        // 副标题放在NORTH
+        JLabel subtitleLabel = new JLabel("Powered by 张恒鑫", SwingConstants.CENTER);
         subtitleLabel.setFont(new Font("微软雅黑", Font.PLAIN, 12));
         mainPanel.add(subtitleLabel, BorderLayout.NORTH);
 
-        // 倒计时标签
-        countdownLabel = new JLabel(String.format("%d秒后自动进入", countdown), SwingConstants.CENTER);
-        countdownLabel.setFont(new Font("微软雅黑", Font.PLAIN, 12));
+        // 中间部分的面板，用BoxLayout垂直排列
+        JPanel centerPanel = new JPanel();
+        centerPanel.setLayout(new BoxLayout(centerPanel, BoxLayout.Y_AXIS));
+
+        // 标题
+        JLabel titleLabel = new JLabel("调音器和节拍器", SwingConstants.CENTER);
+        titleLabel.setFont(new Font("微软雅黑", Font.BOLD, 20));
+        titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        centerPanel.add(titleLabel);
+
+        // 英文标题
+        JLabel englishTitleLabel = new JLabel("Tuning & Metronome", SwingConstants.CENTER);
+        englishTitleLabel.setFont(new Font("微软雅黑", Font.BOLD, 20));
+        englishTitleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        centerPanel.add(englishTitleLabel);
+
+        // 用Box.createRigidArea添加固定间距，而不是 glue
+        centerPanel.add(Box.createRigidArea(new Dimension(0, 40))); // 添加20像素的固定间距
+
+        // 设置centerPanel的不透明性为false
+        centerPanel.setOpaque(false);
+
+        // 将centerPanel添加到另一个JPanel中，并设置其布局为GridBagLayout
+        JPanel wrapperPanel = new JPanel(new GridBagLayout());
+        wrapperPanel.add(centerPanel);
+
+        // 设置wrapperPanel的不透明性为false
+        wrapperPanel.setOpaque(false);
+
+        // 将包装后的面板添加到主面板的CENTER区域
+        mainPanel.add(wrapperPanel, BorderLayout.CENTER);
+
+        // 倒计时放在SOUTH
+        countdownLabel = new JLabel(String.format("等待%d秒后自动进入", countdown), SwingConstants.CENTER);
+        countdownLabel.setFont(new Font("微软雅黑", Font.BOLD, 12));
         mainPanel.add(countdownLabel, BorderLayout.SOUTH);
 
-        // 添加主容器到窗口
         add(mainPanel);
     }
 
     public void startCountdown(Runnable onComplete) {
         Timer timer = new Timer(1000, e -> {
             countdown--;
-            countdownLabel.setText(String.format("%d秒后自动进入", countdown));
+            countdownLabel.setText(String.format("等待%d秒后自动进入", countdown));
             if (countdown < 0) {
                 ((Timer) e.getSource()).stop();
-                dispose(); // 关闭Splash窗口
-                onComplete.run(); // 执行完成后需要执行的任务 (显示主窗口)
+                dispose();
+                onComplete.run();
             }
         });
         timer.start();

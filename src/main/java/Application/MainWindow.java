@@ -22,10 +22,10 @@ public class MainWindow {
             SplashWindow splashWindow = new SplashWindow();
             splashWindow.setVisible(true); // 显示Splash窗口
 
-            splashWindow.startCountdown(MainWindow::showMainGUI); // 开始倒计时，完成后显示主窗口
+            splashWindow.startCountdown(MainWindow::showMainWindow); // 开始倒计时，完成后显示主窗口
         });    }
 
-    private static void showMainGUI() {
+    private static void showMainWindow() {
         JFrame mainFrame = new JFrame("Tuning & Metronome");
         mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         mainFrame.setSize(400, 600);
@@ -55,7 +55,7 @@ public class MainWindow {
         metronomePanel.add(metronomeLabel, BorderLayout.CENTER);
 
         tabbedPane.addTab("调音器", new TunerWindow());
-        tabbedPane.addTab("节拍器", metronomePanel);
+        tabbedPane.addTab("节拍器", new MetronomeWindow());
         return tabbedPane;
     }
 }

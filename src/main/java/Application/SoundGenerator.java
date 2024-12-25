@@ -70,7 +70,8 @@ public class SoundGenerator {
 
     /**
      * 生成指定频率的正弦波
-     * @param frequency 音高（Hz）
+     *
+     * @param frequency  音高（Hz）
      * @param sampleRate 采样率
      * @param numSamples 样本数
      * @return 生成的音频数据

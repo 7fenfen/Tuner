@@ -1,6 +1,6 @@
 package Application;
 
-public class Piano extends Instrument{
+public class Piano extends Instrument {
 
     public Piano() {
         // 添加低音区音符
@@ -113,13 +113,6 @@ public class Piano extends Instrument{
     @Override
     public String getName() {
         return "Piano";
-    }
-
-    public static void main(String[] args) {
-        Piano piano = new Piano();
-        System.out.println(piano.getName());
-        System.out.println(piano.getMusicalScale(1000.00f));
-        System.out.println(piano.getOffset(1000.00f));
     }
 
 }

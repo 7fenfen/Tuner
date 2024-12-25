@@ -142,7 +142,7 @@ public class Tuner2Window extends JPanel {
             currentOffsetLabel.setText(String.format("当前音分偏移量 %d", offset));
 
             if (offset < 0) {
-                negativeOffsetProgressBar.setValue((int) offset*-1);
+                negativeOffsetProgressBar.setValue((int) offset * -1);
                 positiveOffsetProgressBar.setValue(0);
             } else {
                 negativeOffsetProgressBar.setValue(0);

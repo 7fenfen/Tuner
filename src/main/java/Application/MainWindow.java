@@ -7,55 +7,60 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 
 /**
- * 主界面设计，使用FlatLaf+swing
- **/
-
+ * 主界面设计，使用 FlatLaf + Swing
+ */
 public class MainWindow {
 
     public static void main(String[] args) {
         try {
-            UIManager.setLookAndFeel(new FlatLightLaf()); // 设置FlatLaf外观
+            UIManager.setLookAndFeel(new FlatLightLaf()); // 设置 FlatLaf 外观
         } catch (Exception ex) {
-            System.err.println("Error");
+            System.err.println("Error setting FlatLaf LookAndFeel.");
         }
-        SwingUtilities.invokeLater(() -> {
-            SplashWindow splashWindow = new SplashWindow();
-            splashWindow.setVisible(true); // 显示Splash窗口
 
-            splashWindow.startCountdown(MainWindow::showMainWindow); // 开始倒计时，完成后显示主窗口
-        });    }
+        SwingUtilities.invokeLater(() -> {
+            Splash2Window splashWindow = new Splash2Window();
+            splashWindow.setVisible(true); // 显示 Splash 窗口
+
+            splashWindow.startCountdown(MainWindow::showMainWindow); // 倒计时后显示主窗口
+        });
+    }
 
     private static void showMainWindow() {
         JFrame mainFrame = new JFrame("Tuning & Metronome");
         mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        mainFrame.setSize(400, 600);
+        mainFrame.setSize(500, 700);
         mainFrame.setLocationRelativeTo(null);
 
-        JTabbedPane tabbedPane = getjTabbedPane();
+        // 创建选项卡面板
+        JTabbedPane tabbedPane = createTabbedPane();
 
+        // 包装选项卡面板
         JPanel tabWrapperPanel = new JPanel(new BorderLayout());
-        tabWrapperPanel.setBorder(new EmptyBorder(3, 5, 0, 5));
+        tabWrapperPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
         tabWrapperPanel.add(tabbedPane, BorderLayout.CENTER);
 
-        mainFrame.add(tabWrapperPanel, BorderLayout.NORTH);
-
-        JPanel emptyCenterPanel = new JPanel();
-        mainFrame.add(emptyCenterPanel, BorderLayout.CENTER);
+        // 将选项卡面板添加到主窗口
+        mainFrame.add(tabWrapperPanel, BorderLayout.CENTER);
 
         mainFrame.setVisible(true);
     }
 
-    private static JTabbedPane getjTabbedPane() {
+    private static JTabbedPane createTabbedPane() {
         JTabbedPane tabbedPane = new JTabbedPane();
 
-        // 节拍器面板
-        JPanel metronomePanel = new JPanel(new BorderLayout());
-        JLabel metronomeLabel = new JLabel("节拍器界面", SwingConstants.CENTER);
-        metronomeLabel.setFont(new Font("微软雅黑", Font.BOLD, 20));
-        metronomePanel.add(metronomeLabel, BorderLayout.CENTER);
+        // 调音器面板
+        tabbedPane.addTab("调音器", new Tuner3Window());
+        tabbedPane.setToolTipTextAt(0, "进入调音器界面");
 
-        tabbedPane.addTab("调音器", new Tuner2Window());
-        tabbedPane.addTab("节拍器", new MetronomeWindow());
+        // 节拍器面板
+        tabbedPane.addTab("节拍器", new Metronome2Window());
+        tabbedPane.setToolTipTextAt(1, "进入节拍器界面");
+
+        // 设置选项卡样式
+        tabbedPane.setFont(new Font("微软雅黑", Font.PLAIN, 20));
+        tabbedPane.setBorder(BorderFactory.createEmptyBorder(5, 10, 10, 5));
+
         return tabbedPane;
     }
 }

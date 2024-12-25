@@ -1,10 +1,14 @@
 package Application;
 
-import javax.sound.sampled.*;
+import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.DataLine;
+import javax.sound.sampled.TargetDataLine;
 import java.util.logging.Logger;
 
 public class FrequencyAnalyzer {
 
+    private static final Logger logger = Logger.getLogger(FrequencyAnalyzer.class.getName());
     private final int sampleRate;
     private final int bufferSize;
     private final int hopSize;
@@ -13,7 +17,6 @@ public class FrequencyAnalyzer {
     private final LowPassFilter lowPassFilter;   // 低通滤波器
     private final HighPassFilter highPassFilter; // 高通滤波器
     private long lastUpdateTime;
-    private static final Logger logger = Logger.getLogger(FrequencyAnalyzer.class.getName());
 
     public FrequencyAnalyzer(int sampleRate, int bufferSize, int hopSize, long timeIntervalMs) {
         this.sampleRate = sampleRate;

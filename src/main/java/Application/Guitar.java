@@ -2,7 +2,7 @@ package Application;
 
 public class Guitar extends Instrument {
 
-    public Guitar(){
+    public Guitar() {
 
         soundMap.put("E2", 82.41F);
         soundMap.put("F2", 87.31F);

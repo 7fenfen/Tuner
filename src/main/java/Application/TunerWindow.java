@@ -70,7 +70,7 @@ public class TunerWindow extends JPanel {
 
         // 底部区域（键盘）
         JPanel bottomPanel = new JPanel();
-        bottomPanel.setBackground(new Color(100,149,237));//设置背景颜色
+        bottomPanel.setBackground(new Color(100, 149, 237));//设置背景颜色
         JLabel keyboardPlaceholder = new JLabel("键盘 (待实现)");
         keyboardPlaceholder.setHorizontalAlignment(SwingConstants.CENTER);
         bottomPanel.add(keyboardPlaceholder);
@@ -104,6 +104,6 @@ public class TunerWindow extends JPanel {
         // 很粗糙仅供测试
         pitchLabel.setText(df.format(pitch));
         progressBar.setValue((int) ((pitch - 440) * 2));
-        centsLabel.setText(df.format((pitch - 440) * 100/440));//计算音分偏差
+        centsLabel.setText(df.format((pitch - 440) * 100 / 440));//计算音分偏差
     }
 }

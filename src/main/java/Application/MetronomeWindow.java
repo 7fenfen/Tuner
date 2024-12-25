@@ -1,12 +1,10 @@
 package Application;
 
+import javax.sound.sampled.*;
 import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
 import java.util.Objects;
-import javax.sound.sampled.*;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 
 public class MetronomeWindow extends JPanel {
 

@@ -7,7 +7,7 @@ public class Instrument {
 
     protected final HashMap<String, Float> soundMap = new HashMap<>();
 
-    Instrument(){
+    Instrument() {
     }
 
     String getName() {
@@ -49,13 +49,13 @@ public class Instrument {
      * @param pitch 测得频率
      * @return 偏差的音分
      */
-    public int getOffset(float pitch){
+    public int getOffset(float pitch) {
         // 获取音名对应的赫兹
         Float targetPitch;
         targetPitch = soundMap.get(this.getMusicalScale(pitch));
 
         // 计算音分偏移量
-        return (int)((Math.log(pitch / targetPitch) / Math.log(2)) * 1200);
+        return (int) ((Math.log(pitch / targetPitch) / Math.log(2)) * 1200);
     }
 
 }

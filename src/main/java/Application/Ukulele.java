@@ -1,6 +1,6 @@
 package Application;
 
-public class Ukulele extends Instrument{
+public class Ukulele extends Instrument {
 
     public Ukulele() {
         // 尤克里里的标准音（从 G4 到 A5）
@@ -33,7 +33,7 @@ public class Ukulele extends Instrument{
     }
 
     @Override
-    String getName(){
+    String getName() {
         return "Ukulele";
     }
 

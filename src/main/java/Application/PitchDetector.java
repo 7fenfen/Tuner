@@ -6,40 +6,77 @@ import be.tarsos.dsp.pitch.PitchDetectionHandler;
 import be.tarsos.dsp.pitch.PitchProcessor;
 
 import javax.sound.sampled.*;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 public class PitchDetector {
+    private final AudioFormat format;
+    private final BlockingQueue<Float> pitchQueue;
+    private boolean isRunning;
 
-    public static void main(String[] args) {
-        try {
-            // 定义音频格式
-            AudioFormat format = new AudioFormat(44100, 16, 1, true, false);
-            DataLine.Info dataLineInfo = new DataLine.Info(TargetDataLine.class, format);
+    public PitchDetector(float sampleRate, int sampleSizeInBits, int channels, boolean signed, boolean bigEndian) {
+        this.format = new AudioFormat(sampleRate, sampleSizeInBits, channels, signed, bigEndian);
+        this.pitchQueue = new LinkedBlockingQueue<>();
+        this.isRunning = false;
+    }
 
-            // 获取麦克风输入
-            TargetDataLine line = (TargetDataLine) AudioSystem.getLine(dataLineInfo);
-            line.open(format);
-            line.start();
+    /**
+     * 开始音高检测
+     */
+    public void start() throws LineUnavailableException {
+        TargetDataLine line = initializeAudioLine();
+        AudioDispatcher dispatcher = createDispatcher(line);
+        addPitchProcessor(dispatcher);
 
-            // 使用 TarsosDSP 创建音频调度器
-            AudioInputStream audioStream = new AudioInputStream(line);
-            AudioDispatcher dispatcher = new AudioDispatcher(new JVMAudioInputStream(audioStream), 1024, 512);
+        isRunning = true;
+        new Thread(dispatcher).start();
+    }
 
-            // 定义音高处理器
-            PitchDetectionHandler pitchHandler = (result, event) -> {
-                float pitch = result.getPitch(); // 获取频率
-                if (pitch != -1) { // pitch 为 -1 表示无音高检测
-                    System.out.printf("Detected pitch: %.2f Hz%n", pitch);
+    /**
+     * 获取检测到的音高（Hz），如果没有音高则阻塞等待
+     */
+    public Float getNextPitch() throws InterruptedException {
+        return pitchQueue.take();
+    }
+
+    /**
+     * 停止音高检测
+     */
+    public void stop() {
+        isRunning = false;
+    }
+
+    private TargetDataLine initializeAudioLine() throws LineUnavailableException {
+        DataLine.Info dataLineInfo = new DataLine.Info(TargetDataLine.class, format);
+        TargetDataLine line = (TargetDataLine) AudioSystem.getLine(dataLineInfo);
+        line.open(format);
+        line.start();
+        return line;
+    }
+
+    private AudioDispatcher createDispatcher(TargetDataLine line) {
+        AudioInputStream audioStream = new AudioInputStream(line);
+        return new AudioDispatcher(new JVMAudioInputStream(audioStream), 1024, 512);
+    }
+
+    private void addPitchProcessor(AudioDispatcher dispatcher) {
+        PitchDetectionHandler pitchHandler = (result, event) -> {
+            float pitch = result.getPitch();
+            if (pitch != -1 && isRunning) {
+                // 将音高结果放入队列
+                boolean offer_result = pitchQueue.offer(pitch);
+                if (!offer_result) {
+                    // 处理队列满的情况，例如重试或记录日志
+                    System.out.println("Queue is full, could not add pitch: " + pitch);
                 }
-            };
+            }
+        };
 
-            dispatcher.addAudioProcessor(new PitchProcessor(PitchProcessor.PitchEstimationAlgorithm.YIN, 44100, 1024, pitchHandler));
-
-            // 开始处理
-            new Thread(dispatcher).start();
-            System.out.println("Listening for audio... Press Ctrl+C to exit.");
-
-        } catch (LineUnavailableException e) {
-            e.printStackTrace();
-        }
+        dispatcher.addAudioProcessor(new PitchProcessor(
+                PitchProcessor.PitchEstimationAlgorithm.YIN,
+                format.getSampleRate(),
+                1024,
+                pitchHandler
+        ));
     }
 }

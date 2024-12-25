@@ -12,14 +12,10 @@ public class MetronomeWindow extends JPanel {
 
     private JSlider tempoSlider;
     private JButton startStopButton;
-    private JProgressBar progressBar;
     private Timer timer;
     private boolean isRunning;
-    private int targetProgress = 0;
-    private double currentProgress = 0;
-    private double progressIncrement = 0;
     private Clip audioClip;
-    private Timer progressTimer; // 用于平滑进度条的Timer
+    private int tempo;
 
     public MetronomeWindow() {
         setLayout(new BorderLayout());
@@ -29,27 +25,39 @@ public class MetronomeWindow extends JPanel {
             AudioInputStream audioStream = AudioSystem.getAudioInputStream(Objects.requireNonNull(getClass().getResource("/beat.wav")));
             audioClip = AudioSystem.getClip();
             audioClip.open(audioStream);
-            audioClip.setFramePosition(100);
         } catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
             JOptionPane.showMessageDialog(this, "无法加载节拍声音文件！", "错误", JOptionPane.ERROR_MESSAGE);
+            return; // 退出，防止后续空指针异常
         }
 
+        // 速度控制面板
+        JPanel tempoPanel = new JPanel();
+        tempoPanel.setLayout(new BoxLayout(tempoPanel, BoxLayout.Y_AXIS)); // 设置为垂直BoxLayout
 
-        // 速度滑块
         tempoSlider = new JSlider(JSlider.HORIZONTAL, 20, 200, 120);
         tempoSlider.setMajorTickSpacing(20);
         tempoSlider.setMinorTickSpacing(5);
         tempoSlider.setPaintTicks(true);
         tempoSlider.setPaintLabels(true);
-        tempoSlider.addChangeListener(new ChangeListener() {
-            @Override
-            public void stateChanged(ChangeEvent e) {
-                if (isRunning) {
-                    restartMetronome(); // 滑块改变时重启节拍器
-                }
+
+        JLabel tempoLabel = new JLabel("BPM:  120");
+        tempoLabel.setAlignmentX(Component.CENTER_ALIGNMENT); // 标签居中
+
+        tempoSlider.addChangeListener(e -> {
+            tempo = tempoSlider.getValue();
+            tempoLabel.setText("BPM:  " + tempo);
+            if (isRunning) {
+                restartMetronome();
             }
         });
-        add(tempoSlider, BorderLayout.CENTER);
+
+        tempoPanel.add(Box.createVerticalGlue()); // 添加垂直间距
+        tempoPanel.add(tempoSlider);
+        tempoPanel.add(Box.createRigidArea(new Dimension(0, 5))); //添加固定间距
+        tempoPanel.add(tempoLabel);
+        tempoPanel.add(Box.createVerticalGlue()); // 添加垂直间距
+
+        add(tempoPanel, BorderLayout.CENTER);
 
         // 开始/停止按钮
         startStopButton = new JButton("开始");
@@ -65,8 +73,9 @@ public class MetronomeWindow extends JPanel {
         add(startStopButton, BorderLayout.NORTH);
 
         // 界面外观
-        setPreferredSize(new Dimension(400, 200));
+//        setPreferredSize(new Dimension(400, 200));
         setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        setVisible(true);
 
     }
 

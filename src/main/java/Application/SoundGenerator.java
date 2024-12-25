@@ -101,15 +101,4 @@ public class SoundGenerator {
         this.sampleRate = sampleRate;
     }
 
-    public static void main(String[] args) throws LineUnavailableException, IOException {
-        // 使用默认构造函数创建SoundGenerator对象
-        SoundGenerator soundGenerator = new SoundGenerator(44100, 120, 440);
-
-        // 设置BPM和音高
-        soundGenerator.setBpm(120);  // 设置BPM为120
-        soundGenerator.setFrequency(440); // 设置音高为440Hz（A4）
-
-        // 生成并播放声音
-        soundGenerator.generateAndPlay();
-    }
 }

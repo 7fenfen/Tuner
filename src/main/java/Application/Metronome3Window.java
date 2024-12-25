@@ -5,35 +5,31 @@ import javax.swing.*;
 import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
-public class Metronome2Window extends JPanel {
+public class Metronome3Window extends JPanel {
 
-    private JSlider tempoSlider;
-    private JButton startStopButton;
+    private final JSlider tempoSlider;
+    private final JButton startStopButton;
     private Timer timer;
     private boolean isRunning;
     private Clip audioClip;
     private int tempo;
+    private final JComboBox<String> soundComboBox; // 声音类型选择列表
+    private final Map<String, String> soundMap = new HashMap<>(); // 声音文件映射
 
-    public Metronome2Window() {
+    public Metronome3Window() {
         setLayout(new BorderLayout(10, 10));
-        // 设置整体边距
-        setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
-        // 设置背景颜色
-        setBackground(Color.WHITE);
+        setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20)); // 设置整体边距
+        setBackground(Color.WHITE); // 设置背景颜色
 
-        // 加载节拍声音
-        try {
-            AudioInputStream audioStream = AudioSystem.getAudioInputStream(
-                    Objects.requireNonNull(getClass().getResource("/clap.wav")));
-            audioClip = AudioSystem.getClip();
-            audioClip.open(audioStream);
-        } catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
-            JOptionPane.showMessageDialog(this, "无法加载节拍声音文件！",
-                    "错误", JOptionPane.ERROR_MESSAGE);
-            return; // 退出，防止后续空指针异常
-        }
+        // 初始化声音映射
+        initializeSoundMap();
+
+        // 加载初始声音文件
+        loadSound("/clap.wav"); // 默认加载鼓掌声
 
         // 标题部分
         JLabel titleLabel = new JLabel("Metronome");
@@ -80,6 +76,32 @@ public class Metronome2Window extends JPanel {
         tempoPanel.add(Box.createVerticalGlue());
         add(tempoPanel, BorderLayout.CENTER);
 
+        // 声音选择面板
+        JPanel soundPanel = new JPanel();
+        soundPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
+        soundPanel.setBackground(Color.WHITE);
+        JLabel soundLabel = new JLabel("选择声音类型: ");
+        soundLabel.setFont(new Font("微软雅黑", Font.PLAIN, 20));
+        soundComboBox = new JComboBox<>(soundMap.keySet().toArray(new String[0]));
+        // 调整字体大小
+        soundComboBox.setFont(new Font("微软雅黑", Font.PLAIN, 18));
+        // 增加宽度和高度
+        soundComboBox.setPreferredSize(new Dimension(100, 40));
+        // 设置背景色为白色
+        soundComboBox.setBackground(Color.WHITE);
+        // 设置前景色
+        soundComboBox.setForeground(Color.DARK_GRAY);
+
+        soundComboBox.addActionListener(e -> {
+            String selectedSound = (String) soundComboBox.getSelectedItem();
+            if (selectedSound != null) {
+                loadSound(soundMap.get(selectedSound));
+            }
+        });
+        soundPanel.add(soundLabel);
+        soundPanel.add(soundComboBox);
+        add(soundPanel, BorderLayout.NORTH);
+
         // 开始/停止按钮
         startStopButton = new JButton("Start");
         startStopButton.setFont(new Font("Arial", Font.BOLD, 20));
@@ -103,6 +125,27 @@ public class Metronome2Window extends JPanel {
         buttonPanel.setBackground(Color.WHITE);
         buttonPanel.add(startStopButton);
         add(buttonPanel, BorderLayout.SOUTH);
+    }
+
+    private void initializeSoundMap() {
+        soundMap.put("鼓掌声", "/clap.wav");
+        soundMap.put("响指声", "/snap.wav");
+        soundMap.put("鼓声1", "/drum1.wav");
+        soundMap.put("鼓声2", "/drum2.wav");
+    }
+
+    private void loadSound(String filePath) {
+        try {
+            if (audioClip != null && audioClip.isRunning()) {
+                audioClip.stop();
+            }
+            AudioInputStream audioStream = AudioSystem.getAudioInputStream(Objects.requireNonNull(getClass().getResource(filePath)));
+            audioClip = AudioSystem.getClip();
+            audioClip.open(audioStream);
+        } catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
+            JOptionPane.showMessageDialog(this, "无法加载声音文件: " + filePath,
+                    "错误", JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     private void startMetronome() {

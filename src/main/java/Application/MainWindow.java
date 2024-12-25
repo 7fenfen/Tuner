@@ -50,11 +50,11 @@ public class MainWindow {
         JTabbedPane tabbedPane = new JTabbedPane();
 
         // 调音器面板
-        tabbedPane.addTab("调音器", new Tuner3Window());
+        tabbedPane.addTab("调音器", new Tuner4Window());
         tabbedPane.setToolTipTextAt(0, "进入调音器界面");
 
         // 节拍器面板
-        tabbedPane.addTab("节拍器", new Metronome2Window());
+        tabbedPane.addTab("节拍器", new Metronome3Window());
         tabbedPane.setToolTipTextAt(1, "进入节拍器界面");
 
         // 设置选项卡样式

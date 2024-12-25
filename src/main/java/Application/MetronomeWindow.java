@@ -20,7 +20,7 @@ public class MetronomeWindow extends JPanel {
 
         // 加载节拍声音
         try {
-            AudioInputStream audioStream = AudioSystem.getAudioInputStream(Objects.requireNonNull(getClass().getResource("/beat.wav")));
+            AudioInputStream audioStream = AudioSystem.getAudioInputStream(Objects.requireNonNull(getClass().getResource("/clap.wav")));
             audioClip = AudioSystem.getClip();
             audioClip.open(audioStream);
         } catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {

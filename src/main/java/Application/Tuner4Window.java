@@ -6,7 +6,7 @@ import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.util.Objects;
 
-public class Tuner3Window extends JPanel {
+public class Tuner4Window extends JPanel {
 
     private final JComboBox<String> instrumentComboBox;
     private final JLabel currentPitchLabel;
@@ -17,101 +17,69 @@ public class Tuner3Window extends JPanel {
     private final JProgressBar negativeOffsetProgressBar;
     private final JProgressBar positiveOffsetProgressBar;
 
-    public Tuner3Window() {
+    public Tuner4Window() {
 
         // 音高检测器
         detector = new PitchDetector(44100, 16, 1, true, false);
-
         try {
             detector.start();
         } catch (LineUnavailableException e) {
             throw new RuntimeException(e);
         }
 
-        setLayout(new BorderLayout(10, 10));
-        // 设置整体边距
+        setLayout(new BorderLayout(15, 15));
         setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
-        // 设置背景颜色
         setBackground(Color.WHITE);
 
         // 标题
         JLabel titleLabel = new JLabel("Tuner", SwingConstants.CENTER);
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 36));
+        titleLabel.setForeground(Color.DARK_GRAY);
         add(titleLabel, BorderLayout.NORTH);
 
         // 主内容面板
-        JPanel contentPanel = new JPanel();
-        contentPanel.setLayout(new GridBagLayout());
+        JPanel contentPanel = new JPanel(new GridBagLayout());
         contentPanel.setBorder(BorderFactory.createTitledBorder(
-                BorderFactory.createLineBorder(Color.LIGHT_GRAY, 1),
+                BorderFactory.createLineBorder(Color.LIGHT_GRAY, 2),
                 "Tuner Info",
                 TitledBorder.LEADING,
                 TitledBorder.TOP,
-                new Font("Arial", Font.BOLD, 14),
+                new Font("微软雅黑", Font.BOLD, 18),
                 Color.DARK_GRAY));
 
-        // 面板
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.insets = new Insets(10, 10, 10, 10);
+        gbc.insets = new Insets(15, 15, 15, 15);
         gbc.gridx = 0;
         gbc.gridy = 0;
 
         // 乐器选择
         String[] instruments = {"吉他", "钢琴", "尤克里里", "小提琴"};
         instrumentComboBox = new JComboBox<>(instruments);
+        instrumentComboBox.setFont(new Font("微软雅黑", Font.PLAIN, 20));
         instrumentComboBox.setSelectedItem("钢琴");
         instrumentComboBox.addActionListener(e -> updateInstrument());
-        contentPanel.add(new JLabel("选择乐器: "), gbc);
-        gbc.gridx = 1;
-        contentPanel.add(instrumentComboBox, gbc);
-        gbc.gridx = 0;
-        gbc.gridy++;
+        addLabeledComponent(contentPanel, "选择乐器: ", instrumentComboBox, gbc);
 
         // 当前音高
-        currentPitchLabel = new JLabel("");
-        currentPitchLabel.setFont(new Font("Arial", Font.PLAIN, 20));
-        contentPanel.add(new JLabel("当前音高: "), gbc);
-        gbc.gridx = 1;
-        contentPanel.add(currentPitchLabel, gbc);
-        gbc.gridx = 0;
-        gbc.gridy++;
+        currentPitchLabel = createValueLabel();
+        addLabeledComponent(contentPanel, "当前音高: ", currentPitchLabel, gbc);
 
         // 当前标准音
-        currentStandardNoteLabel = new JLabel("");
-        currentStandardNoteLabel.setFont(new Font("Arial", Font.PLAIN, 20));
-        contentPanel.add(new JLabel("当前标准音: "), gbc);
-        gbc.gridx = 1;
-        contentPanel.add(currentStandardNoteLabel, gbc);
-        gbc.gridx = 0;
-        gbc.gridy++;
+        currentStandardNoteLabel = createValueLabel();
+        addLabeledComponent(contentPanel, "当前标准音: ", currentStandardNoteLabel, gbc);
 
         // 当前音分偏移
-        currentOffsetLabel = new JLabel("");
-        currentOffsetLabel.setFont(new Font("Arial", Font.PLAIN, 20));
-        contentPanel.add(new JLabel("音分偏移量: "), gbc);
-        gbc.gridx = 1;
-        contentPanel.add(currentOffsetLabel, gbc);
-        gbc.gridx = 0;
-        gbc.gridy++;
+        currentOffsetLabel = createValueLabel();
+        addLabeledComponent(contentPanel, "音分偏移量: ", currentOffsetLabel, gbc);
 
         // 负偏移进度条
-        negativeOffsetProgressBar = new JProgressBar(0, 80);
-        negativeOffsetProgressBar.setStringPainted(true);
-        negativeOffsetProgressBar.setForeground(Color.RED);
-        contentPanel.add(new JLabel("负偏移: "), gbc);
-        gbc.gridx = 1;
-        contentPanel.add(negativeOffsetProgressBar, gbc);
-        gbc.gridx = 0;
-        gbc.gridy++;
+        negativeOffsetProgressBar = createCustomProgressBar(Color.RED);
+        addLabeledComponent(contentPanel, "负偏移: ", negativeOffsetProgressBar, gbc);
 
         // 正偏移进度条
-        positiveOffsetProgressBar = new JProgressBar(0, 80);
-        positiveOffsetProgressBar.setStringPainted(true);
-        positiveOffsetProgressBar.setForeground(Color.GREEN);
-        contentPanel.add(new JLabel("正偏移: "), gbc);
-        gbc.gridx = 1;
-        contentPanel.add(positiveOffsetProgressBar, gbc);
+        positiveOffsetProgressBar = createCustomProgressBar(Color.GREEN);
+        addLabeledComponent(contentPanel, "正偏移: ", positiveOffsetProgressBar, gbc);
 
         add(contentPanel, BorderLayout.CENTER);
 
@@ -153,7 +121,7 @@ public class Tuner3Window extends JPanel {
             String musicalScale = currentInstrument.getMusicalScale(pitch);
             int offset = currentInstrument.getOffset(pitch);
 
-            // 计算偏移音分
+            // 更新显示
             currentStandardNoteLabel.setText(musicalScale);
             currentOffsetLabel.setText(String.format("%d cent", offset));
 
@@ -161,5 +129,31 @@ public class Tuner3Window extends JPanel {
             negativeOffsetProgressBar.setValue(offset < 0 ? -offset : 0);
             positiveOffsetProgressBar.setValue(Math.max(offset, 0));
         }
+    }
+
+    private JLabel createValueLabel() {
+        JLabel label = new JLabel("");
+        label.setFont(new Font("微软雅黑", Font.PLAIN, 24));
+        label.setForeground(Color.BLUE);
+        return label;
+    }
+
+    private JProgressBar createCustomProgressBar(Color color) {
+        JProgressBar progressBar = new JProgressBar(0, 80);
+        progressBar.setPreferredSize(new Dimension(250, 30));
+        progressBar.setStringPainted(true);
+        progressBar.setForeground(color);
+        progressBar.setFont(new Font("微软雅黑", Font.BOLD, 16));
+        return progressBar;
+    }
+
+    private void addLabeledComponent(JPanel panel, String labelText, JComponent component, GridBagConstraints gbc) {
+        JLabel label = new JLabel(labelText);
+        label.setFont(new Font("微软雅黑", Font.BOLD, 20));
+        gbc.gridx = 0;
+        panel.add(label, gbc);
+        gbc.gridx = 1;
+        panel.add(component, gbc);
+        gbc.gridy++;
     }
 }

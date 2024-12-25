@@ -54,7 +54,7 @@ public class MainWindow {
         metronomeLabel.setFont(new Font("微软雅黑", Font.BOLD, 20));
         metronomePanel.add(metronomeLabel, BorderLayout.CENTER);
 
-        tabbedPane.addTab("调音器", new TunerWindow());
+        tabbedPane.addTab("调音器", new Tuner2Window());
         tabbedPane.addTab("节拍器", new MetronomeWindow());
         return tabbedPane;
     }

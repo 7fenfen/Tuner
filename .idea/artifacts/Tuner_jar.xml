@@ -1,0 +1,11 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="Tuner:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/Tuner_jar</output-path>
+    <root id="archive" name="Tuner.jar">
+      <element id="module-output" name="Tuner" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/com/formdev/flatlaf/3.5.4/flatlaf-3.5.4.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/be/tarsos/dsp/core/2.5/core-2.5.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/be/tarsos/dsp/jvm/2.5/jvm-2.5.jar" path-in-jar="/" />
+    </root>
+  </artifact>
+</component>

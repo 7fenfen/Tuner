@@ -2,7 +2,7 @@ package DealSound;
 
 // 复数类
 
-public class Complex {
+class Complex {
 
     public final double real;
     public final double imag;

@@ -104,7 +104,7 @@ public class MainWindow {
             tabbedPane.setToolTipTextAt(0, "进入调音器界面");
 
             // 添加节拍器面板并设置提示
-            tabbedPane.addTab("节拍器", new Metronome3Window());
+            tabbedPane.addTab("节拍器", new MetronomeWindow());
             tabbedPane.setToolTipTextAt(1, "进入节拍器界面");
 
 

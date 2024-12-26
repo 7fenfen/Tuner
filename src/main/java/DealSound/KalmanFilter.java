@@ -1,7 +1,8 @@
 package DealSound;
 
 // 卡尔曼滤波器
-public class KalmanFilter {
+class KalmanFilter {
+
     private final double processNoise;  // 过程噪声
     private final double measurementNoise;  // 观测噪声
     private double state;  // 当前估计的频率

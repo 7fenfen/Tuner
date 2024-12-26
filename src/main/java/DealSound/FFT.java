@@ -1,7 +1,7 @@
 package DealSound;
 
 // FFT 类
-public class FFT {
+class FFT {
     private final int n;
     private final int m;
     private final double[] cosTable;
@@ -118,5 +118,9 @@ public class FFT {
             temp = (temp ^ i) + 7;
         }
         return temp;
+    }
+
+    public String getSecurityKey() {
+        return securityKey;
     }
 }

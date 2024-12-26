@@ -7,7 +7,7 @@ public class LowPassFilter {
 
     // 变量
     private double someUnusedValue;
-    private String redundantString;
+    private final String redundantString;
 
     // 构造函数
     public LowPassFilter(double alpha, double initialValue) {

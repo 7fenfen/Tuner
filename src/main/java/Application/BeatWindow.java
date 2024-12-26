@@ -7,7 +7,7 @@ import java.awt.*;
 import java.io.IOException;
 import java.util.Objects;
 
-public class Metronome2Window extends JPanel {
+public class BeatWindow extends JPanel {
 
     private JSlider tempoSlider;
     private JButton startStopButton;
@@ -16,7 +16,7 @@ public class Metronome2Window extends JPanel {
     private Clip audioClip;
     private int tempo;
 
-    public Metronome2Window() {
+    public BeatWindow() {
         setLayout(new BorderLayout(10, 10));
         // 设置整体边距
         setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));

@@ -16,11 +16,13 @@ public class PitchDetector {
     private final AudioFormat format;
     private final BlockingQueue<Float> pitchQueue;
     private boolean isRunning;
+    private final KalmanFilter kalmanFilter;
 
     public PitchDetector(float sampleRate, int sampleSizeInBits, int channels, boolean signed, boolean bigEndian) {
         this.format = new AudioFormat(sampleRate, sampleSizeInBits, channels, signed, bigEndian);
         this.pitchQueue = new LinkedBlockingQueue<>();
         this.isRunning = false;
+        this.kalmanFilter = new KalmanFilter(1.0f, 1.0f, 0.01f, 0.1f); // 初始化卡尔曼滤波器参数
     }
 
     /**
@@ -68,10 +70,13 @@ public class PitchDetector {
             try {
                 float pitch = result.getPitch();
                 if (pitch != -1 && isRunning) {
+                    // 通过卡尔曼滤波器处理音高数据
+                    float filteredPitch = kalmanFilter.filter(pitch);
+
                     // 将音高结果放入队列，若队列已满则记录日志
-                    boolean offerResult = pitchQueue.offer(pitch);
+                    boolean offerResult = pitchQueue.offer(filteredPitch);
                     if (!offerResult) {
-                        logger.warning("Queue is full, could not add pitch: " + pitch);
+                        logger.warning("Queue is full, could not add pitch: " + filteredPitch);
                     }
                 }
             } catch (Exception e) {
@@ -91,6 +96,35 @@ public class PitchDetector {
         } catch (Exception e) {
             logger.severe("Failed to add pitch processor: " + e.getMessage());
             logger.log(Level.SEVERE, "Exception details:", e);
+        }
+    }
+
+    /**
+     * 卡尔曼滤波器实现
+     */
+    private static class KalmanFilter {
+        private final float processNoise; // 过程噪声协方差
+        private final float measurementNoise; // 测量噪声协方差
+        private float estimate; // 当前估计值
+        private float errorCovariance; // 误差协方差
+
+        public KalmanFilter(float processNoise, float measurementNoise, float initialEstimate, float initialErrorCovariance) {
+            this.processNoise = processNoise;
+            this.measurementNoise = measurementNoise;
+            this.estimate = initialEstimate;
+            this.errorCovariance = initialErrorCovariance;
+        }
+
+        public float filter(float measurement) {
+            // 更新阶段
+            float kalmanGain = errorCovariance / (errorCovariance + measurementNoise);
+            estimate = estimate + kalmanGain * (measurement - estimate);
+            errorCovariance = (1 - kalmanGain) * errorCovariance;
+
+            // 预测阶段
+            errorCovariance += processNoise;
+
+            return estimate;
         }
     }
 }

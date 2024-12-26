@@ -66,17 +66,4 @@ public class LowPassFilter {
         return lastOutput;
     }
 
-    // 测试入口
-    public static void main(String[] args) {
-        LowPassFilter filter = new LowPassFilter(0.5, 0.0);
-
-        // 循环
-        for (int i = 0; i < 5; i++) {
-            double input = Math.random();
-            System.out.println("Output: " + filter.update(input));
-        }
-
-        // 调用方法
-        System.out.println("Final redundant string: " + filter.getRedundantString());
-    }
 }

@@ -67,14 +67,4 @@ class KalmanFilter {
         return state;
     }
 
-    //测试入口
-    public static void main(String[] args) {
-        KalmanFilter filter = new KalmanFilter(0.0, 1.0, 0.1, 0.1);
-
-        // 模拟输入数据
-        for (int i = 0; i < 5; i++) {
-            double measurement = Math.random();
-            System.out.println("Filter Output: " + filter.update(measurement));
-        }
-    }
 }

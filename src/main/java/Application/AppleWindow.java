@@ -1,28 +1,22 @@
 package Application;
 
-import javax.sound.sampled.LineUnavailableException;
 import javax.swing.*;
 import java.awt.*;
 import java.util.Objects;
 
-public class Tuner2Window extends JPanel {
+public class AppleWindow extends JPanel {
 
-    private JComboBox<String> instrumentComboBox;
-    private JLabel currentPitchLabel;
-    private JLabel currentStandardNoteLabel;
-    private JLabel currentOffsetLabel;
+    private final JComboBox<String> instrumentComboBox;
+    private final JLabel currentPitchLabel;
+    private final JLabel currentStandardNoteLabel;
+    private final JLabel currentOffsetLabel;
     private Instrument currentInstrument;
-    private PitchDetector detector;
-    private JProgressBar negativeOffsetProgressBar, positiveOffsetProgressBar;
+    private final JProgressBar negativeOffsetProgressBar;
+    private final JProgressBar positiveOffsetProgressBar;
 
 
-    public Tuner2Window() {
-        detector = new PitchDetector(44100, 16, 1, true, false);
-        try {
-            detector.start();
-        } catch (LineUnavailableException e) {
-            throw new RuntimeException(e);
-        }
+    public AppleWindow() {
+
         // 设置主面板布局为 BoxLayout，垂直排列
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10)); // 设置外边距
@@ -70,35 +64,6 @@ public class Tuner2Window extends JPanel {
         positiveOffsetPanel.add(new JLabel("正偏移", SwingConstants.CENTER), BorderLayout.EAST); // 添加“+”号
         add(createPanel(positiveOffsetPanel));
 
-//
-//
-//        // 当前音高标签
-//        currentPitchLabel = new JLabel("当前音高 - Hz");
-//        add(currentPitchLabel);
-//
-//        // 当前标准音标签
-//        currentStandardNoteLabel = new JLabel("当前标准音 - ");
-//        add(currentStandardNoteLabel);
-//
-//        // 当前音分偏移量标签
-//        currentOffsetLabel = new JLabel("当前音分偏移量 - ");
-//        add(currentOffsetLabel);
-
-        // 启动检测线程
-        new Thread(() -> {
-            while (true) {
-                try {
-                    Float pitch = detector.getNextPitch();
-                    if (pitch != null && pitch > 0) {
-                        System.out.println("更新音高为" + pitch);
-                        SwingUtilities.invokeLater(() -> updateDisplay(pitch));
-                    }
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                    break;
-                }
-            }
-        }).start();
     }
 
     // 用来包装组件并设置边距
@@ -114,6 +79,8 @@ public class Tuner2Window extends JPanel {
         String selectedInstrument = (String) Objects.requireNonNull(instrumentComboBox.getSelectedItem());
         switch (selectedInstrument) {
             case "吉他":
+                updateInstrument();
+                updateDisplay(1.0f);
                 currentInstrument = new Guitar();
                 break;
             case "钢琴":

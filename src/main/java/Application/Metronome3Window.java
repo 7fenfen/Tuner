@@ -152,14 +152,12 @@ public class Metronome3Window extends JPanel {
         int tempo = tempoSlider.getValue();
         int delay = 60000 / tempo;
 
-        timer = new Timer(delay, e -> {
-            new Thread(() -> {
-                if (audioClip != null) {
-                    audioClip.setFramePosition(0);
-                    audioClip.start();
-                }
-            }).start();
-        });
+        timer = new Timer(delay, e -> new Thread(() -> {
+            if (audioClip != null) {
+                audioClip.setFramePosition(0);
+                audioClip.start();
+            }
+        }).start());
 
         timer.start();
     }

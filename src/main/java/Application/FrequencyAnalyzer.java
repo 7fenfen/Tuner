@@ -1,14 +1,13 @@
 package Application;
 
-import javax.sound.sampled.AudioFormat;
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.DataLine;
-import javax.sound.sampled.TargetDataLine;
+import javax.sound.sampled.*;
+import java.io.IOException;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class FrequencyAnalyzer {
 
-    private static final Logger logger = Logger.getLogger(FrequencyAnalyzer.class.getName());
+    static final Logger logger = Logger.getLogger(FrequencyAnalyzer.class.getName());
     private final int sampleRate;
     private final int bufferSize;
     private final int hopSize;
@@ -42,7 +41,6 @@ public class FrequencyAnalyzer {
             byte[] buffer = new byte[bufferSize];
 
             while (true) {
-
                 // 读取数据
                 int bytesRead = microphone.read(buffer, 0, bufferSize);
 
@@ -66,10 +64,19 @@ public class FrequencyAnalyzer {
                     }
                 }
             }
+        } catch (LineUnavailableException e) {
+            logger.severe("Audio line unavailable: " + e.getMessage());
+            logger.log(Level.SEVERE, "Exception details:", e);
         } catch (Exception e) {
-            logger.severe("An error occurred during frequency analysis: " + e.getMessage());
-            e.printStackTrace();
+            logger.severe("Unexpected error during frequency analysis: " + e.getMessage());
+            logger.log(Level.SEVERE, "Exception details:", e);
         }
+        startAnalysisWithHighPassFilter(new FrequencyUpdateCallback() {
+            @Override
+            public void onFrequencyUpdate(double frequency) {
+                System.out.println("High pass filter frequency: " + frequency);
+            }
+        });
     }
 
     // 启动频率分析并使用高通滤波器
@@ -155,6 +162,7 @@ public class FrequencyAnalyzer {
         for (int i = 0; i < shorts.length; i++) {
             shorts[i] = (short) ((buffer[2 * i + 1] << 8) | (buffer[2 * i] & 0xFF));
         }
+        int a = getHopSize();
         return shorts;
     }
 

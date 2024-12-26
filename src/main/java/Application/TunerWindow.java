@@ -2,81 +2,24 @@ package Application;
 
 import javax.sound.sampled.LineUnavailableException;
 import javax.swing.*;
-import javax.swing.border.EmptyBorder;
+import javax.swing.border.TitledBorder;
 import java.awt.*;
-import java.text.DecimalFormat;
+import java.util.Objects;
 
 public class TunerWindow extends JPanel {
 
-    private JLabel pitchLabel;
-    private JLabel centsLabel;
-    private JProgressBar progressBar;
-    private JLabel currentStandardPitchLabel;
-    private PitchDetector detector;
-    private DecimalFormat df = new DecimalFormat("#.00");
+    private final JComboBox<String> instrumentComboBox;
+    private final JLabel currentPitchLabel;
+    private final JLabel currentStandardNoteLabel;
+    private final JLabel currentOffsetLabel;
+    private Instrument currentInstrument;
+    private final PitchDetector detector;
+    private final JProgressBar negativeOffsetProgressBar;
+    private final JProgressBar positiveOffsetProgressBar;
 
     public TunerWindow() {
-        setLayout(new BorderLayout());
-        setBorder(new EmptyBorder(20, 20, 20, 20));
 
-        JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 0));
-        topPanel.add(new JLabel("440Hz"));
-        topPanel.add(new JLabel("442Hz"));
-        topPanel.add(new JLabel("音名"));
-        topPanel.add(new JLabel("唱名"));
-        add(topPanel, BorderLayout.NORTH);
-
-        // 中间区域（仪表盘、音高、偏差）
-        JPanel centerPanel = new JPanel(new GridBagLayout()); // GridBagLayout精细布局
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(5, 5, 5, 5); // 组件之间的间距
-
-        // 仪表盘（这里用JProgressBar简单代替)
-        progressBar = new JProgressBar(-50, 50);
-        progressBar.setStringPainted(true);
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        gbc.gridwidth = 3; // 跨三列
-        gbc.fill = GridBagConstraints.HORIZONTAL; // 水平填充
-        centerPanel.add(progressBar, gbc);
-
-        // 当前标准音
-        currentStandardPitchLabel = new JLabel("当前标准音 440 Hz");
-        gbc.gridx = 0;
-        gbc.gridy = 1;
-        gbc.gridwidth = 1;
-        gbc.fill = GridBagConstraints.NONE; // 不填充
-        gbc.anchor = GridBagConstraints.LINE_START;
-        centerPanel.add(currentStandardPitchLabel, gbc);
-
-        // 音高
-        pitchLabel = new JLabel("D#4");
-        pitchLabel.setFont(new Font("微软雅黑", Font.BOLD, 48));
-        gbc.gridx = 1;
-        gbc.gridy = 1;
-        gbc.weightx = 1; // 允许水平方向拉伸
-        gbc.anchor = GridBagConstraints.CENTER;
-        centerPanel.add(pitchLabel, gbc);
-
-        // 音准偏差
-        centsLabel = new JLabel("+26");
-        gbc.gridx = 2;
-        gbc.gridy = 1;
-        gbc.weightx = 0; // 不允许水平方向拉伸
-        gbc.anchor = GridBagConstraints.LINE_END;
-        centerPanel.add(centsLabel, gbc);
-
-        add(centerPanel, BorderLayout.CENTER);
-
-        // 底部区域（键盘）
-        JPanel bottomPanel = new JPanel();
-        bottomPanel.setBackground(new Color(100, 149, 237));//设置背景颜色
-        JLabel keyboardPlaceholder = new JLabel("键盘 (待实现)");
-        keyboardPlaceholder.setHorizontalAlignment(SwingConstants.CENTER);
-        bottomPanel.add(keyboardPlaceholder);
-        add(bottomPanel, BorderLayout.SOUTH);
-
-        // 初始化 PitchDetector
+        // 音高检测器
         detector = new PitchDetector(44100, 16, 1, true, false);
         try {
             detector.start();
@@ -84,13 +27,72 @@ public class TunerWindow extends JPanel {
             throw new RuntimeException(e);
         }
 
+        setLayout(new BorderLayout(15, 15));
+        setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+        setBackground(Color.WHITE);
+
+        // 标题
+        JLabel titleLabel = new JLabel("Tuner", SwingConstants.CENTER);
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 36));
+        titleLabel.setForeground(Color.DARK_GRAY);
+        add(titleLabel, BorderLayout.NORTH);
+
+        // 主内容面板
+        JPanel contentPanel = new JPanel(new GridBagLayout());
+        contentPanel.setBorder(BorderFactory.createTitledBorder(
+                BorderFactory.createLineBorder(Color.LIGHT_GRAY, 2),
+                "Tuner Info",
+                TitledBorder.LEADING,
+                TitledBorder.TOP,
+                new Font("微软雅黑", Font.BOLD, 18),
+                Color.DARK_GRAY));
+
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.insets = new Insets(15, 15, 15, 15);
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+
+        // 乐器选择
+        String[] instruments = {"吉他", "钢琴", "尤克里里", "小提琴"};
+        instrumentComboBox = new JComboBox<>(instruments);
+        instrumentComboBox.setFont(new Font("微软雅黑", Font.PLAIN, 20));
+        instrumentComboBox.setSelectedItem("钢琴");
+        instrumentComboBox.addActionListener(e -> updateInstrument());
+        addLabeledComponent(contentPanel, "选择乐器: ", instrumentComboBox, gbc);
+
+        // 当前音高
+        currentPitchLabel = createValueLabel();
+        addLabeledComponent(contentPanel, "当前音高: ", currentPitchLabel, gbc);
+
+        // 当前标准音
+        currentStandardNoteLabel = createValueLabel();
+        addLabeledComponent(contentPanel, "当前标准音: ", currentStandardNoteLabel, gbc);
+
+        // 当前音分偏移
+        currentOffsetLabel = createValueLabel();
+        addLabeledComponent(contentPanel, "音分偏移量: ", currentOffsetLabel, gbc);
+
+        // 负偏移进度条
+        negativeOffsetProgressBar = createCustomProgressBar(Color.RED);
+        addLabeledComponent(contentPanel, "负偏移: ", negativeOffsetProgressBar, gbc);
+
+        // 正偏移进度条
+        positiveOffsetProgressBar = createCustomProgressBar(Color.GREEN);
+        addLabeledComponent(contentPanel, "正偏移: ", positiveOffsetProgressBar, gbc);
+
+        add(contentPanel, BorderLayout.CENTER);
+
+        // 初始化乐器
+        updateInstrument();
+
         // 启动检测线程
         new Thread(() -> {
             while (true) {
                 try {
                     Float pitch = detector.getNextPitch();
                     if (pitch != null && pitch > 0) {
-                        SwingUtilities.invokeLater(() -> updatePitchInfo(pitch));
+                        SwingUtilities.invokeLater(() -> updateDisplay(pitch));
                     }
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
@@ -100,10 +102,58 @@ public class TunerWindow extends JPanel {
         }).start();
     }
 
-    private void updatePitchInfo(float pitch) {
-        // 很粗糙仅供测试
-        pitchLabel.setText(df.format(pitch));
-        progressBar.setValue((int) ((pitch - 440) * 2));
-        centsLabel.setText(df.format((pitch - 440) * 100 / 440));//计算音分偏差
+    private void updateInstrument() {
+        String selectedInstrument = (String) Objects.requireNonNull(instrumentComboBox.getSelectedItem());
+        switch (selectedInstrument) {
+            case "吉他" -> currentInstrument = new Guitar();
+            case "钢琴" -> currentInstrument = new Piano();
+            case "尤克里里" -> currentInstrument = new Ukulele();
+            case "小提琴" -> currentInstrument = new Violin();
+            default -> currentInstrument = new Instrument();
+        }
+    }
+
+    private void updateDisplay(Float pitch) {
+        currentPitchLabel.setText(String.format("%.2f Hz", pitch));
+
+        if (currentInstrument != null) {
+            // 计算基准音
+            String musicalScale = currentInstrument.getMusicalScale(pitch);
+            int offset = currentInstrument.getOffset(pitch);
+
+            // 更新显示
+            currentStandardNoteLabel.setText(musicalScale);
+            currentOffsetLabel.setText(String.format("%d cent", offset));
+
+            // 更新偏移度
+            negativeOffsetProgressBar.setValue(offset < 0 ? -offset : 0);
+            positiveOffsetProgressBar.setValue(Math.max(offset, 0));
+        }
+    }
+
+    private JLabel createValueLabel() {
+        JLabel label = new JLabel("");
+        label.setFont(new Font("微软雅黑", Font.PLAIN, 24));
+        label.setForeground(Color.BLUE);
+        return label;
+    }
+
+    private JProgressBar createCustomProgressBar(Color color) {
+        JProgressBar progressBar = new JProgressBar(0, 80);
+        progressBar.setPreferredSize(new Dimension(250, 30));
+        progressBar.setStringPainted(true);
+        progressBar.setForeground(color);
+        progressBar.setFont(new Font("微软雅黑", Font.BOLD, 16));
+        return progressBar;
+    }
+
+    private void addLabeledComponent(JPanel panel, String labelText, JComponent component, GridBagConstraints gbc) {
+        JLabel label = new JLabel(labelText);
+        label.setFont(new Font("微软雅黑", Font.BOLD, 20));
+        gbc.gridx = 0;
+        panel.add(label, gbc);
+        gbc.gridx = 1;
+        panel.add(component, gbc);
+        gbc.gridy++;
     }
 }

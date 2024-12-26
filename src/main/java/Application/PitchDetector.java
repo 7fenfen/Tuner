@@ -8,6 +8,9 @@ import be.tarsos.dsp.pitch.PitchProcessor;
 import javax.sound.sampled.*;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.logging.Level;
+
+import static Application.FrequencyAnalyzer.logger;
 
 public class PitchDetector {
     private final AudioFormat format;
@@ -60,23 +63,34 @@ public class PitchDetector {
     }
 
     private void addPitchProcessor(AudioDispatcher dispatcher) {
+        // 创建音高检测处理器的回调函数
         PitchDetectionHandler pitchHandler = (result, event) -> {
-            float pitch = result.getPitch();
-            if (pitch != -1 && isRunning) {
-                // 将音高结果放入队列
-                boolean offer_result = pitchQueue.offer(pitch);
-                if (!offer_result) {
-                    // 处理队列满的情况，例如重试或记录日志
-                    System.out.println("Queue is full, could not add pitch: " + pitch);
+            try {
+                float pitch = result.getPitch();
+                if (pitch != -1 && isRunning) {
+                    // 将音高结果放入队列，若队列已满则记录日志
+                    boolean offerResult = pitchQueue.offer(pitch);
+                    if (!offerResult) {
+                        logger.warning("Queue is full, could not add pitch: " + pitch);
+                    }
                 }
+            } catch (Exception e) {
+                logger.warning("Error in pitch detection handler: " + e.getMessage());
+                logger.log(Level.WARNING, "Exception details:", e);
             }
         };
 
-        dispatcher.addAudioProcessor(new PitchProcessor(
-                PitchProcessor.PitchEstimationAlgorithm.YIN,
-                format.getSampleRate(),
-                1024,
-                pitchHandler
-        ));
+        try {
+            // 添加音高处理器到音频分发器
+            dispatcher.addAudioProcessor(new PitchProcessor(
+                    PitchProcessor.PitchEstimationAlgorithm.YIN,
+                    format.getSampleRate(),
+                    1024,
+                    pitchHandler
+            ));
+        } catch (Exception e) {
+            logger.severe("Failed to add pitch processor: " + e.getMessage());
+            logger.log(Level.SEVERE, "Exception details:", e);
+        }
     }
 }

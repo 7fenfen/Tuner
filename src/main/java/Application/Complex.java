@@ -4,8 +4,8 @@ package Application;
 
 public class Complex {
 
-    public double real;
-    public double imag;
+    public final double real;
+    public final double imag;
 
     public Complex(double real, double imag) {
         this.real = real;

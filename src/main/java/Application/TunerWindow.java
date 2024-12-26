@@ -54,7 +54,7 @@ public class TunerWindow extends JPanel {
         gbc.gridy = 0;
 
         // 乐器选择
-        String[] instruments = {"吉他", "钢琴", "尤克里里", "小提琴"};
+        String[] instruments = {"吉他", "钢琴", "尤克里里", "小提琴", "二胡", "中音提琴", "马头琴", "笛子", "葫芦丝"};
         instrumentComboBox = new JComboBox<>(instruments);
         instrumentComboBox.setFont(new Font("微软雅黑", Font.PLAIN, 20));
         instrumentComboBox.setSelectedItem("钢琴");
@@ -109,6 +109,11 @@ public class TunerWindow extends JPanel {
             case "钢琴" -> currentInstrument = new Piano();
             case "尤克里里" -> currentInstrument = new Ukulele();
             case "小提琴" -> currentInstrument = new Violin();
+            case "二胡" -> currentInstrument = new Erhu();
+            case "中音提琴" -> currentInstrument = new Viola();
+            case "马头琴" -> currentInstrument = new MorinKhuur();
+            case "笛子" -> currentInstrument = new Flute();
+            case "葫芦丝" -> currentInstrument = new Hulusi();
             default -> currentInstrument = new Instrument();
         }
     }

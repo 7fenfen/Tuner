@@ -1,5 +1,8 @@
 package Application;
 
+import DealSound.PitchDetector;
+import Instrument.*;
+
 import javax.sound.sampled.LineUnavailableException;
 import javax.swing.*;
 import javax.swing.border.TitledBorder;

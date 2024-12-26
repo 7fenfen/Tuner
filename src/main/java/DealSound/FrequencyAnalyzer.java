@@ -1,7 +1,6 @@
-package Application;
+package DealSound;
 
 import javax.sound.sampled.*;
-import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 

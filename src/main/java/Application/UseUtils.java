@@ -1,5 +1,7 @@
 package Application;
 
+import DealSound.FrequencyAnalyzer;
+
 import java.util.Random;
 
 public class UseUtils {

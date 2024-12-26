@@ -1,4 +1,4 @@
-package Application;
+package DealSound;
 
 // FFT 类
 public class FFT {

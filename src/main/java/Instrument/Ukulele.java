@@ -1,4 +1,4 @@
-package Application;
+package Instrument;
 
 public class Ukulele extends Instrument {
 

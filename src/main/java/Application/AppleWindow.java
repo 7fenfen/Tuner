@@ -1,5 +1,7 @@
 package Application;
 
+import Instrument.*;
+
 import javax.swing.*;
 import java.awt.*;
 import java.util.Objects;

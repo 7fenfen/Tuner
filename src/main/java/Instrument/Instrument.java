@@ -1,4 +1,4 @@
-package Application;
+package Instrument;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -16,7 +16,7 @@ public class Instrument {
      * 默认构造函数。
      * 初始化Instrument对象。
      */
-    Instrument() {
+    public Instrument() {
     }
 
     /**

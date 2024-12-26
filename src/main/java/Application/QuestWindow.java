@@ -1,5 +1,8 @@
 package Application;
 
+import DealSound.FrequencyAnalyzer;
+import Instrument.*;
+
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
 import java.awt.*;

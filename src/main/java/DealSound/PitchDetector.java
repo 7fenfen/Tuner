@@ -1,4 +1,4 @@
-package Application;
+package DealSound;
 
 import be.tarsos.dsp.AudioDispatcher;
 import be.tarsos.dsp.io.jvm.JVMAudioInputStream;
@@ -10,7 +10,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.logging.Level;
 
-import static Application.FrequencyAnalyzer.logger;
+import static DealSound.FrequencyAnalyzer.logger;
 
 public class PitchDetector {
     private final AudioFormat format;

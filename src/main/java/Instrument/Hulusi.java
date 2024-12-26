@@ -1,4 +1,4 @@
-package Application;
+package Instrument;
 
 public class Hulusi extends Instrument {
 

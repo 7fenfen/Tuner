@@ -1,10 +1,8 @@
-package Application;
+package Instrument;
 
-public class Flute extends Instrument {
+public class Erhu extends Instrument {
 
-    public Flute() {
-        soundMap.put("C4", 261.63F);
-        soundMap.put("C#4", 277.18F);
+    public Erhu() {
         soundMap.put("D4", 293.66F);
         soundMap.put("D#4", 311.13F);
         soundMap.put("E4", 329.63F);
@@ -24,6 +22,6 @@ public class Flute extends Instrument {
 
     @Override
     public String getName() {
-        return "Flute";
+        return "Erhu";
     }
 }

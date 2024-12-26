@@ -1,4 +1,4 @@
-package Application;
+package Instrument;
 
 public class MorinKhuur extends Instrument {
 

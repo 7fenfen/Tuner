@@ -24,7 +24,7 @@ public class MainWindow {
 
         // 使用 Swing 的事件调度线程初始化 GUI
         SwingUtilities.invokeLater(() -> {
-            Splash2Window splashWindow = new Splash2Window();
+            SplashWindow splashWindow = new SplashWindow();
             splashWindow.setVisible(true); // 显示 Splash 窗口
 
             // 启动倒计时，结束后显示主窗口

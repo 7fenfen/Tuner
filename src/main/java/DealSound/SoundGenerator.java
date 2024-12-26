@@ -1,4 +1,4 @@
-package Application;
+package DealSound;
 
 import be.tarsos.dsp.AudioDispatcher;
 import be.tarsos.dsp.AudioEvent;

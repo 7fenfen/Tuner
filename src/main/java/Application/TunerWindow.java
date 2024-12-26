@@ -37,11 +37,13 @@ public class TunerWindow extends JPanel {
         // 标题
         JLabel titleLabel = new JLabel("Tuner", SwingConstants.CENTER);
         titleLabel.setFont(new Font("Arial", Font.BOLD, 36));
+        titleLabel.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
         titleLabel.setForeground(Color.DARK_GRAY);
         add(titleLabel, BorderLayout.NORTH);
 
         // 主内容面板
         JPanel contentPanel = new JPanel(new GridBagLayout());
+        contentPanel.setBackground(Color.white);
         contentPanel.setBorder(BorderFactory.createTitledBorder(
                 BorderFactory.createLineBorder(Color.LIGHT_GRAY, 2),
                 "Tuner Info",

@@ -32,32 +32,53 @@ public class MetronomeWindow extends JPanel {
         loadSound("/clap.wav"); // 默认加载鼓掌声
 
         // 标题部分
-        JLabel titleLabel = new JLabel("Metronome");
-        titleLabel.setFont(new Font("微软雅黑", Font.BOLD, 24));
-        titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        JLabel titleLabel = new JLabel("Metronome", SwingConstants.CENTER);
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 36));
+        titleLabel.setForeground(Color.DARK_GRAY);
         titleLabel.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
         add(titleLabel, BorderLayout.NORTH);
+
+        // 声音选择面板
+        JPanel soundPanel = new JPanel();
+        soundPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
+        soundPanel.setBackground(Color.WHITE);
+        JLabel soundLabel = new JLabel("选择声音类型: ");
+        soundLabel.setFont(new Font("微软雅黑", Font.PLAIN, 20));
+        soundComboBox = new JComboBox<>(soundMap.keySet().toArray(new String[0]));
+        soundComboBox.setFont(new Font("微软雅黑", Font.PLAIN, 18));
+        soundComboBox.setPreferredSize(new Dimension(100, 40));
+        soundComboBox.setBackground(Color.WHITE);
+        soundComboBox.setForeground(Color.DARK_GRAY);
+
+        soundComboBox.addActionListener(e -> {
+            String selectedSound = (String) soundComboBox.getSelectedItem();
+            if (selectedSound != null) {
+                loadSound(soundMap.get(selectedSound));
+            }
+        });
+        soundPanel.add(soundLabel);
+        soundPanel.add(soundComboBox);
 
         // 速度控制面板
         JPanel tempoPanel = new JPanel();
         tempoPanel.setLayout(new BoxLayout(tempoPanel, BoxLayout.Y_AXIS));
-        tempoPanel.setBackground(Color.WHITE);
+        tempoPanel.setBackground(Color.white);
         tempoPanel.setBorder(BorderFactory.createTitledBorder(
-                BorderFactory.createLineBorder(Color.LIGHT_GRAY, 1),
+                BorderFactory.createLineBorder(Color.LIGHT_GRAY, 2),
                 "Beat Info",
                 TitledBorder.LEADING,
                 TitledBorder.TOP,
-                new Font("微软雅黑", Font.BOLD, 14),
+                new Font("微软雅黑", Font.BOLD, 18),
                 Color.DARK_GRAY));
 
-        tempoSlider = new JSlider(JSlider.HORIZONTAL, 20, 220, 120);
+        tempoSlider = new JSlider(JSlider.HORIZONTAL, 20, 180, 100);
         tempoSlider.setMajorTickSpacing(20);
         tempoSlider.setMinorTickSpacing(5);
         tempoSlider.setPaintTicks(true);
         tempoSlider.setPaintLabels(true);
         tempoSlider.setForeground(Color.DARK_GRAY);
 
-        JLabel tempoLabel = new JLabel("BPM:  120");
+        JLabel tempoLabel = new JLabel("BPM:  100");
         tempoLabel.setFont(new Font("微软雅黑", Font.PLAIN, 20));
         tempoLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
@@ -69,38 +90,18 @@ public class MetronomeWindow extends JPanel {
             }
         });
 
+        // 添加声音选择面板
+        tempoPanel.add(soundPanel);
+
+        // 添加BPM速度选择条
         tempoPanel.add(Box.createVerticalGlue());
         tempoPanel.add(tempoSlider);
         tempoPanel.add(Box.createRigidArea(new Dimension(0, 10)));
         tempoPanel.add(tempoLabel);
         tempoPanel.add(Box.createVerticalGlue());
-        add(tempoPanel, BorderLayout.CENTER);
 
-        // 声音选择面板
-        JPanel soundPanel = new JPanel();
-        soundPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
-        soundPanel.setBackground(Color.WHITE);
-        JLabel soundLabel = new JLabel("选择声音类型: ");
-        soundLabel.setFont(new Font("微软雅黑", Font.PLAIN, 20));
-        soundComboBox = new JComboBox<>(soundMap.keySet().toArray(new String[0]));
-        // 调整字体大小
-        soundComboBox.setFont(new Font("微软雅黑", Font.PLAIN, 18));
-        // 增加宽度和高度
-        soundComboBox.setPreferredSize(new Dimension(100, 40));
-        // 设置背景色为白色
-        soundComboBox.setBackground(Color.WHITE);
-        // 设置前景色
-        soundComboBox.setForeground(Color.DARK_GRAY);
-
-        soundComboBox.addActionListener(e -> {
-            String selectedSound = (String) soundComboBox.getSelectedItem();
-            if (selectedSound != null) {
-                loadSound(soundMap.get(selectedSound));
-            }
-        });
-        soundPanel.add(soundLabel);
-        soundPanel.add(soundComboBox);
-        add(soundPanel, BorderLayout.NORTH);
+        // 排布面板
+        add(tempoPanel, BorderLayout.CENTER); // 将速度控制面板添加到中心
 
         // 开始/停止按钮
         startStopButton = new JButton("Start");

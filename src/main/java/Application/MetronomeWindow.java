@@ -132,6 +132,9 @@ public class MetronomeWindow extends JPanel {
         soundMap.put("响指声", "/snap.wav");
         soundMap.put("鼓声1", "/drum1.wav");
         soundMap.put("鼓声2", "/drum2.wav");
+        soundMap.put("沙锤", "/maraca.wav");
+        soundMap.put("木鱼", "/woodenfish.wav");
+        soundMap.put("三角铁", "/triangle.wav");
     }
 
     private void loadSound(String filePath) {
@@ -139,7 +142,9 @@ public class MetronomeWindow extends JPanel {
             if (audioClip != null && audioClip.isRunning()) {
                 audioClip.stop();
             }
-            AudioInputStream audioStream = AudioSystem.getAudioInputStream(Objects.requireNonNull(getClass().getResource(filePath)));
+            // 打开声音文件
+            AudioInputStream audioStream = AudioSystem.getAudioInputStream(
+                    Objects.requireNonNull(getClass().getResource(filePath)));
             audioClip = AudioSystem.getClip();
             audioClip.open(audioStream);
         } catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
